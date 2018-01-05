@@ -614,3 +614,11 @@ type exchangeProfileParams struct {
 type exchangeProfileArgs struct {
 	cookie string
 }
+type exchangeProfileIDParams struct {
+	cookie string
+	id     string
+}
+type exchangeProfileIDArgs struct {
+	cookie string
+	id     []int64
+}

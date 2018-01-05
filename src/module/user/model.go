@@ -155,6 +155,7 @@ type ConciseUsers struct {
 	IdentityCode int64  `db:"identity_code"`
 }
 
+// UserSession ..
 type UserSession struct {
 	ID           int64               `json:"id"`
 	Name         string              `json:"name"`
@@ -166,4 +167,18 @@ type UserSession struct {
 	LineID       string              `json:"line_id"`
 	Phone        string              `json:"phone"`
 	Status       int8                `json:"active"`
+}
+
+// ResponseUser ..
+type ResponseUser struct {
+	ID           int64  `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Gender       int8   `json:"gender"`
+	Note         string `json:"note"`
+	Roles        int64  `json:"roles"`
+	IdentityCode int64  `json:"identity_code"`
+	LineID       string `json:"line_id"`
+	Phone        string `json:"phone"`
+	Status       int8   `json:"active"`
 }

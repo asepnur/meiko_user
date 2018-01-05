@@ -873,13 +873,13 @@ func GetUserSession(cookie string) (UserSession, error) {
 	defer client.Close()
 	key := "session:" + cookie
 	jsd, err := redis.String(client.Do("GET", key))
-
 	if err != nil && err != redis.ErrNil {
 		return user, err
 	}
 
 	err = json.Unmarshal([]byte(jsd), &user)
 	if err != nil {
+		fmt.Println(err)
 		return user, err
 	}
 

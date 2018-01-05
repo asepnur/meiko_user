@@ -11,7 +11,7 @@ import (
 
 	"github.com/asepnur/meiko_user/src/email"
 	rg "github.com/asepnur/meiko_user/src/module/rolegroup"
-	"github.com/asepnur/meiko_user/src/module/user"
+	user "github.com/asepnur/meiko_user/src/module/user"
 	"github.com/asepnur/meiko_user/src/util/alias"
 	"github.com/asepnur/meiko_user/src/util/auth"
 	"github.com/asepnur/meiko_user/src/webserver/template"
@@ -1178,6 +1178,7 @@ func GetTimeHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	return
 }
 
+// ExchangeProfile ..
 func ExchangeProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	params := exchangeProfileParams{
@@ -1202,5 +1203,59 @@ func ExchangeProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	template.RenderJSONResponse(w, new(template.Response).
 		SetData(u).
 		SetCode(http.StatusOK))
+	return
+}
+
+// ExchangeUserByID ..
+func ExchangeUserByID(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	params := exchangeProfileIDParams{
+		cookie: r.FormValue("cookie"),
+		id:     r.FormValue("id"),
+	}
+	args, err := params.validate()
+	if err != nil {
+		template.RenderJSONResponse(w, new(template.Response).
+			SetCode(http.StatusBadRequest).
+			AddError(err.Error()))
+		return
+	}
+	u, err := user.SelectByID(args.id, true)
+	if err != nil {
+		template.RenderJSONResponse(w, new(template.Response).
+			SetCode(http.StatusBadRequest).
+			AddError("Invalid Request"))
+		return
+	}
+	res := []user.ResponseUser{}
+	for _, val := range u {
+		var lineID string
+		var roleID int64
+		var phone string
+		if val.LineID.Valid {
+			lineID = fmt.Sprintf("%s", val.LineID.String)
+		}
+		if val.RoleGroupsID.Valid {
+			roleID = val.RoleGroupsID.Int64
+		}
+		if val.Phone.Valid {
+			phone = fmt.Sprintf("%s", val.Phone.String)
+		}
+		res = append(res, user.ResponseUser{
+			ID:           val.ID,
+			Name:         val.Name,
+			Email:        val.Email,
+			Gender:       val.Gender,
+			Note:         val.Note,
+			Roles:        roleID,
+			IdentityCode: val.IdentityCode,
+			Phone:        phone,
+			Status:       val.Status,
+			LineID:       lineID,
+		})
+	}
+
+	template.RenderJSONResponse(w, new(template.Response).
+		SetCode(http.StatusOK).
+		SetData(res))
 	return
 }

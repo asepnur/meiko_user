@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"strconv"
+	"strings"
 
 	"github.com/asepnur/meiko_user/src/module/user"
 
@@ -752,5 +753,38 @@ func (params exchangeProfileParams) validate() (exchangeProfileArgs, error) {
 	}
 	return exchangeProfileArgs{
 		cookie: params.cookie,
+	}, nil
+}
+func (params exchangeProfileIDParams) validate() (exchangeProfileIDArgs, error) {
+	var args exchangeProfileIDArgs
+	if helper.IsEmpty(params.cookie) {
+		return args, fmt.Errorf("Cookie can not be empty")
+	}
+	if len(params.cookie) != 32 {
+		return args, fmt.Errorf("Invalid Cookie")
+	}
+	if len(params.id) < 0 {
+		return args, fmt.Errorf("ID can not be empty")
+	}
+	var ids []int64
+	if len(params.id) > 1 {
+		id := strings.Split(params.id, "~")
+		for _, val := range id {
+			idint, err := strconv.ParseInt(val, 10, 64)
+			if err != nil {
+				return args, err
+			}
+			ids = append(ids, idint)
+		}
+	} else {
+		idint, err := strconv.ParseInt(params.id, 10, 64)
+		if err != nil {
+			return args, err
+		}
+		ids = append(ids, idint)
+	}
+	return exchangeProfileIDArgs{
+		cookie: params.cookie,
+		id:     ids,
 	}, nil
 }

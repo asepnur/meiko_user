@@ -47,6 +47,7 @@ func loadRouter(r *httprouter.Router) {
 	// ========================== User Handler Internal ==========================
 	// user internal
 
-	r.POST("/api/v1/user/exhange-profile", auth.Oauth(user.ExchangeProfile))
+	r.GET("/api/v1/user/exhange-profile", auth.Oauth(user.ExchangeProfile))
+	r.GET("/api/v1/user/exhange-id", auth.Oauth(user.ExchangeUserByID))
 	// ====================== End  =====================
 }
