@@ -634,6 +634,12 @@ type exchangeBySchduleIDArgs struct {
 	Limit      int
 	Offset     int
 }
+type exchangeByIdentityParams struct {
+	IdentityCode string
+}
+type exchangeByIdentityArgs struct {
+	IdentityCode []int64
+}
 type responseByID struct {
 	Total int     `json:"total"`
 	Data  []int64 `json:"data"`

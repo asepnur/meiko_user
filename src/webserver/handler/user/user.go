@@ -1246,6 +1246,33 @@ func ExchangeUserByScheduleID(w http.ResponseWriter, r *http.Request, ps httprou
 
 }
 
+// ExchangeUserByIdentityCode ..
+func ExchangeUserByIdentityCode(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	params := exchangeByIdentityParams{
+		IdentityCode: r.FormValue("identity_code"),
+	}
+
+	args, err := params.validate()
+	if err != nil {
+		template.RenderJSONResponse(w, new(template.Response).
+			SetCode(http.StatusBadRequest).
+			AddError(err.Error()))
+		return
+	}
+	ids, err := user.SelectIDByIdentityCode(args.IdentityCode)
+	if err != nil {
+		template.RenderJSONResponse(w, new(template.Response).
+			SetCode(http.StatusBadRequest).
+			AddError(err.Error()))
+		return
+	}
+	template.RenderJSONResponse(w, new(template.Response).
+		SetCode(http.StatusOK).
+		SetData(ids))
+	return
+
+}
+
 // ExchangeUserByID ..
 func ExchangeUserByID(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	params := exchangeProfileIDParams{

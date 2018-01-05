@@ -819,3 +819,21 @@ func (params exchangeBySchduleIDParams) validate() (exchangeBySchduleIDArgs, err
 		Offset:     int(offset),
 	}, nil
 }
+func (params exchangeByIdentityParams) validate() (exchangeByIdentityArgs, error) {
+	var args exchangeByIdentityArgs
+	if helper.IsEmpty(params.IdentityCode) {
+		return args, fmt.Errorf("Schedule ID can not be empty")
+	}
+	ids := strings.Split(params.IdentityCode, "~")
+	var identityCode []int64
+	for _, val := range ids {
+		id, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return args, err
+		}
+		identityCode = append(identityCode, id)
+	}
+	return exchangeByIdentityArgs{
+		IdentityCode: identityCode,
+	}, nil
+}

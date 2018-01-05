@@ -50,5 +50,6 @@ func loadRouter(r *httprouter.Router) {
 	r.POST("/api/v1/user/exhange-profile", auth.Oauth(user.ExchangeProfile))
 	r.POST("/api/v1/user/exhange-id", auth.Oauth(user.ExchangeUserByID))
 	r.POST("/api/v1/user/schedule-id", auth.Oauth(user.ExchangeUserByScheduleID))
+	r.POST("/api/v1/user/identity-code", auth.Oauth(user.ExchangeUserByIdentityCode))
 	// ====================== End  =====================
 }
