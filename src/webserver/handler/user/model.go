@@ -615,10 +615,26 @@ type exchangeProfileArgs struct {
 	cookie string
 }
 type exchangeProfileIDParams struct {
-	cookie string
-	id     string
+	id      string
+	isSort  string
+	columns string
 }
 type exchangeProfileIDArgs struct {
-	cookie string
-	id     []int64
+	id      []int64
+	isSort  bool
+	columns []string
+}
+type exchangeBySchduleIDParams struct {
+	ScheduleID string
+	Limit      string
+	Offset     string
+}
+type exchangeBySchduleIDArgs struct {
+	ScheduleID int64
+	Limit      int
+	Offset     int
+}
+type responseByID struct {
+	Total int     `json:"total"`
+	Data  []int64 `json:"data"`
 }

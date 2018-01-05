@@ -1206,11 +1206,51 @@ func ExchangeProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	return
 }
 
+// ExchangeUserByScheduleID ..
+func ExchangeUserByScheduleID(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	params := exchangeBySchduleIDParams{
+		ScheduleID: r.FormValue("schedule_id"),
+		Limit:      r.FormValue("limit"),
+		Offset:     r.FormValue("offset"),
+	}
+
+	args, err := params.validate()
+	if err != nil {
+		template.RenderJSONResponse(w, new(template.Response).
+			SetCode(http.StatusBadRequest).
+			AddError(err.Error()))
+		return
+	}
+	ids, err := user.SelectIDByScheduleID(args.ScheduleID, args.Limit, args.Offset)
+	if err != nil {
+		template.RenderJSONResponse(w, new(template.Response).
+			SetCode(http.StatusBadRequest).
+			AddError(err.Error()))
+		return
+	}
+	count, err := user.SelectCountByScheduleID(args.ScheduleID)
+	if err != nil {
+		template.RenderJSONResponse(w, new(template.Response).
+			SetCode(http.StatusBadRequest).
+			AddError(err.Error()))
+		return
+	}
+	res := responseByID{
+		Total: count,
+		Data:  ids,
+	}
+	template.RenderJSONResponse(w, new(template.Response).
+		SetCode(http.StatusOK).
+		SetData(res))
+	return
+
+}
+
 // ExchangeUserByID ..
 func ExchangeUserByID(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	params := exchangeProfileIDParams{
-		cookie: r.FormValue("cookie"),
 		id:     r.FormValue("id"),
+		isSort: r.FormValue("is_sort"),
 	}
 	args, err := params.validate()
 	if err != nil {
@@ -1219,7 +1259,7 @@ func ExchangeUserByID(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 			AddError(err.Error()))
 		return
 	}
-	u, err := user.SelectByID(args.id, true)
+	u, err := user.SelectByID(args.id, args.isSort)
 	if err != nil {
 		template.RenderJSONResponse(w, new(template.Response).
 			SetCode(http.StatusBadRequest).
@@ -1253,7 +1293,6 @@ func ExchangeUserByID(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 			LineID:       lineID,
 		})
 	}
-
 	template.RenderJSONResponse(w, new(template.Response).
 		SetCode(http.StatusOK).
 		SetData(res))

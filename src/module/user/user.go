@@ -32,9 +32,8 @@ import (
 		Phone			= 082214467300
 		RoleGroupsID	= 0
 */
-func SelectByID(id []int64, isSort bool, column ...string) ([]User, error) {
+func SelectByID(id []int64, isSort bool) ([]User, error) {
 	var user []User
-	var c []string
 	var sortQuery string
 
 	d := helper.Int64ToStringSlice(id)
@@ -42,34 +41,23 @@ func SelectByID(id []int64, isSort bool, column ...string) ([]User, error) {
 	if isSort {
 		sortQuery = "ORDER BY identity_code ASC"
 	}
-
-	if len(column) < 1 {
-		c = []string{
-			ColID,
-			ColName,
-			ColEmail,
-			ColGender,
-			ColNote,
-			ColStatus,
-			ColIdentityCode,
-			ColLineID,
-			ColPhone,
-			ColRoleGroupsID,
-		}
-	} else {
-		for _, val := range column {
-			c = append(c, val)
-		}
-	}
 	ids := strings.Join(d, ", ")
-	cols := strings.Join(c, ", ")
 	query := fmt.Sprintf(`
 		SELECT
-			%s
+			id,
+			name,
+			email,
+			gender,
+			note,
+			status,
+			identity_code,
+			line_id,
+			phone,
+			rolegroups_id
 		FROM
 			users
 		WHERE
-			id IN (%s) %s;`, cols, ids, sortQuery)
+			id IN (%s) %s;`, ids, sortQuery)
 	err := conn.DB.Select(&user, query)
 	if err != nil {
 		return user, err
@@ -879,7 +867,6 @@ func GetUserSession(cookie string) (UserSession, error) {
 
 	err = json.Unmarshal([]byte(jsd), &user)
 	if err != nil {
-		fmt.Println(err)
 		return user, err
 	}
 

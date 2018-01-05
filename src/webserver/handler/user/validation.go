@@ -757,11 +757,13 @@ func (params exchangeProfileParams) validate() (exchangeProfileArgs, error) {
 }
 func (params exchangeProfileIDParams) validate() (exchangeProfileIDArgs, error) {
 	var args exchangeProfileIDArgs
-	if helper.IsEmpty(params.cookie) {
-		return args, fmt.Errorf("Cookie can not be empty")
+	if helper.IsEmpty(params.isSort) {
+		return args, fmt.Errorf("Is sort can not be empty")
 	}
-	if len(params.cookie) != 32 {
-		return args, fmt.Errorf("Invalid Cookie")
+	isSort := false
+
+	if params.isSort == "1" {
+		isSort = true
 	}
 	if len(params.id) < 0 {
 		return args, fmt.Errorf("ID can not be empty")
@@ -784,7 +786,36 @@ func (params exchangeProfileIDParams) validate() (exchangeProfileIDArgs, error) 
 		ids = append(ids, idint)
 	}
 	return exchangeProfileIDArgs{
-		cookie: params.cookie,
 		id:     ids,
+		isSort: isSort,
+	}, nil
+}
+
+func (params exchangeBySchduleIDParams) validate() (exchangeBySchduleIDArgs, error) {
+	var args exchangeBySchduleIDArgs
+	if helper.IsEmpty(params.ScheduleID) {
+		return args, fmt.Errorf("Schedule ID can not be empty")
+	}
+	id, err := strconv.ParseInt(params.ScheduleID, 10, 64)
+	if err != nil {
+		return args, err
+	}
+	if helper.IsEmpty(params.Offset) || helper.IsEmpty(params.Limit) {
+		return args, fmt.Errorf("Invalid request")
+	}
+
+	offset, err := strconv.ParseUint(params.Offset, 10, 64)
+	if err != nil {
+		return args, fmt.Errorf("Invalid request")
+	}
+
+	limit, err := strconv.ParseUint(params.Limit, 10, 64)
+	if err != nil {
+		return args, fmt.Errorf("Invalid request")
+	}
+	return exchangeBySchduleIDArgs{
+		ScheduleID: id,
+		Limit:      int(limit),
+		Offset:     int(offset),
 	}, nil
 }
